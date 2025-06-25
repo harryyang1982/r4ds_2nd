@@ -94,3 +94,68 @@ ggplot(diamonds, aes(x = carat)) +
   geom_histogram(binwidth = 0.1)
 
 ## Visualizing Relationships
+### A Numerical and a Categorical Variable
+
+ggplot(penguins, aes(x = species,
+                     y = body_mass_g)) +
+  geom_boxplot()
+
+ggplot(penguins, aes(x = body_mass_g,
+                     color = species)) +
+  geom_density(linewidth = 0.75)
+
+ggplot(penguins, aes(x = body_mass_g,
+                     color = species,
+                     fill = species)) +
+  geom_density(alpha = 0.5)
+
+## Two Categorical Variables
+
+ggplot(penguins, aes(x = island,
+                     fill = species)) +
+  geom_bar()
+
+ggplot(penguins, aes(x = island,
+                     fill = species)) +
+  geom_bar()
+
+ggplot(penguins, aes(x = island,
+                     fill = species)) +
+  geom_bar(position = "fill")
+
+## Two Numerical Variables
+
+ggplot(penguins, aes(x = flipper_length_mm,
+                     y = body_mass_g)) +
+  geom_point()
+
+## Three or More Variables
+
+ggplot(penguins, aes(x = flipper_length_mm,
+                     y = body_mass_g)) +
+  geom_point(aes(color = species,
+                 shape = island))
+
+ggplot(penguins, aes(x = flipper_length_mm,
+                     y = body_mass_g)) +
+  geom_point(aes(color = species,
+                 shape = species)) +
+  facet_wrap(~island)
+
+ggplot(
+  data = penguins,
+  mapping = aes(
+    x = bill_length_mm, y = bill_depth_mm,
+    color = species, shape = species
+  )
+) +
+  geom_point() +
+  labs(color = "Species",
+       shape = "Species")
+
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill")
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar(position = "fill")
+
+ggsave("penguin_plot.png")
