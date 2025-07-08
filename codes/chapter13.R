@@ -230,3 +230,74 @@ flights |>
 flights |> group_by(dest) |> filter(row_number() < 4)
 flights |> group_by(dest) |> filter(row_number(dep_delay)
                                     < 4)
+
+flights |> 
+  filter(arr_delay > 0) |> 
+  group_by(dest) |> 
+  summarize(delay = sum(arr_delay, na.rm = TRUE))
+
+flights |> 
+  select(dest, arr_delay) |> 
+  group_by(dest) |> 
+  filter(arr_delay > 0) |> 
+  mutate(total_delay = sum(arr_delay, na.rm = TRUE),
+         prop_delay = arr_delay / total_delay)
+
+## Numeric Summaries
+
+### Center
+
+flights |> 
+  group_by(year, month, day) |> 
+  summarize(
+    mean = mean(dep_delay, na.rm = TRUE),
+    median = median(dep_delay, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  ) |> 
+  ggplot(aes(x = mean, y = median)) +
+  geom_abline(slope = 1, intercept = 0, color = "white", linewidth = 2) +
+  geom_point()
+
+### Minimum, Maximum, and Quantiles
+
+flights |> 
+  group_by(year, month, day) |> 
+  summarize(
+    max = max(dep_delay, na.rm = TRUE),
+    q95 = quantile(dep_delay, 0.95, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+### Spread
+
+flights |> 
+  group_by(origin, dest) |> 
+  summarize(
+    distance_sd = IQR(distance),
+    n = n(),
+    .groups = "drop"
+  ) |> 
+  filter(distance_sd > 0)
+
+### Distributions
+
+flights |> 
+  filter(dep_delay < 120) |> 
+  ggplot(aes(x = dep_delay, group = interaction(day, month))) +
+  geom_freqpoly(binwidth = 5,
+                alpha = 1/5)
+
+## Positions
+flights |> 
+  group_by(year, month, day) |> 
+  summarize(
+    first_dep = first(dep_time, na_rm = TRUE),
+    fifth_dep = nth(dep_time, 5, na_rm = TRUE),
+    last_dep = last(dep_time, na_rm = TRUE)
+  )
+
+flights |> 
+  group_by(year, month, day) |> 
+  mutate(r = min_rank(sched_dep_time)) |> 
+  filter(r %in% c(1, max(r)))
